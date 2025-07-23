@@ -13,6 +13,16 @@
           androidenv.androidPkgs.platform-tools
           android-studio
         ];
+
+        shellHook = if !stdenv.isDarwin then ''
+          #!/bin/bash
+          $(awk -F: -v user=$USER 'user == $1 { print $NF }' /etc/passwd)
+          exit 
+        '' else ''
+          #!/bin/bash
+          $(dscl . -read $HOME 'UserShell' | grep --only-matching '/.*')
+          exit
+        '';
       };
   });
 }
